@@ -15,4 +15,35 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <profiles>
+  <profile>
+    <id>dev</id>
+    <properties>
+      <env>development</env>
+    </properties>
+  </profile>
+  <profile>
+    <id>prod</id>
+    <properties>
+      <env>production</env>
+    </properties>
+  </profile>
+  </profiles>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.example.App</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+    </build>
 </project>
