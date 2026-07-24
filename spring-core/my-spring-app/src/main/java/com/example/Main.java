@@ -14,8 +14,8 @@ public class Main
         System.out.println( "1" );
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         System.out.println( "2" );
-        HelloWorld obj = (HelloWorld) context.getBean("helloWorld", HelloWorld.class);
+        Hellos hellos = context.getBean(Hellos.class);
         System.out.println( "3" );
-        obj.getMessage();
+        hellos.getHellos();
     }
 }
