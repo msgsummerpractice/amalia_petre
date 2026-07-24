@@ -1,10 +1,17 @@
 package com.example.demo.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+
+import com.example.demo.model.ConfiguratieVehicul;
+
 public class User {
 
     private Long id;
     private String name;
     private int age;
+    @Autowired
+    private ConfiguratieVehicul configuratieVehicul;
 
     public User(){}
 
@@ -12,6 +19,7 @@ public class User {
         this.id = id;
         this.name = name;
         this.age = age;
+        this.configuratieVehicul = new ConfiguratieVehicul();
     }
 
     public Long getId(){
@@ -34,5 +42,8 @@ public class User {
         this.age = age;
     }
 
+    public String getConfiguratieVehicul() {
+        return configuratieVehicul.getMarca() + " " + configuratieVehicul.getTip();
+    }
     
 }

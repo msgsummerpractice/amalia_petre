@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.ArrayList;
 import com.example.demo.model.User;
 
+//Repository class that works directly with the "database" layer
 @Repository
 public class UsersRepoImpl implements UsersRepo {
-
+    // Database simulation with a list of users
     public List<User> users = new ArrayList<>(List.of(
             new User(1L, "John Doe", 26),
             new User(2L, "Jane Smith", 30),

@@ -5,6 +5,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UsersRepo;
 import org.springframework.stereotype.Service;
 
+// Service class that adds bussiness logic to the repository layer
 @Service
 public class UserServiceImpl implements UserService {
     
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = usersRepo.findById(id);
         if(user == null) {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("User not found whith ID: " + id);
         }
         return user;
     }
@@ -39,4 +40,5 @@ public class UserServiceImpl implements UserService {
         }
         usersRepo.save(user);
     }
+
 }
