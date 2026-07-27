@@ -20,12 +20,12 @@ import jakarta.persistence.GenerationType;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
+@com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement(localName = "user") 
 public class User {
     
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "userame", nullable = false, unique = true)
     private String username;
     private String email;
     private String password;

@@ -36,34 +36,36 @@ public class UserService {
         if(id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid user ID: " + id);
         }
-        if(!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found with ID: " + id);
-        }
-        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+        // Had to comment this part so that my controller can handle the exception and return a 404 status code instead of throwing an exception
+
+        // if(!userRepository.existsById(id)) {
+        //     throw new IllegalArgumentException("User not found with ID: " + id);
+        // }
+        return userRepository.findById(id).orElse(null);
     }
 
     // Retrieve a user by email
     public User getUserByEmail(String email) {
-        if(email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be null or empty");
-        }
+        // if(email == null || email.trim().isEmpty()) {
+        //     throw new IllegalArgumentException("Email cannot be null or empty");
+        // }
 
         User user = userRepository.findByEmail(email);
-        if(user == null) {
-            throw new IllegalArgumentException("User not found with email: " + email);
-        }
+        // if(user == null) {
+        //     throw new IllegalArgumentException("User not found with email: " + email);
+        // }
         return user;
     }
 
     // Retrieve a user by username
     public User getUserByUsername(String username) {
-        if(username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
+        // if(username == null || username.trim().isEmpty()) {
+        //     throw new IllegalArgumentException("Username cannot be null or empty");
+        // }
         User user = userRepository.findByUsername(username);
-        if(user == null) {
-            throw new IllegalArgumentException("User not found with username: " + username);
-        }
+        // if(user == null) {
+        //     throw new IllegalArgumentException("User not found with username: " + username);
+        // }
         return user;
     }
 
@@ -140,12 +142,15 @@ public class UserService {
         if(userRequest == null) {
             throw new IllegalArgumentException("UserRequest cannot be null");
         }
-        User user = new User();
-        user.setUsername(userRequest.getUsername());
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
-        user.setFirstname(userRequest.getFirstname());
-        user.setLastname(userRequest.getLastname());
+
+        // User user = new User();
+        // user.setUsername(userRequest.getUsername());
+        // user.setEmail(userRequest.getEmail());
+        // user.setPassword(userRequest.getPassword());
+        // user.setFirstname(userRequest.getFirstname());
+        // user.setLastname(userRequest.getLastname());
+
+        User user = UserMapper.toUserEntity(userRequest);
         return UserMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -157,14 +162,14 @@ public class UserService {
         if(userRequest == null) {
             throw new IllegalArgumentException("UserRequest cannot be null");
         }
-
+        User userToUpdate = UserMapper.toUserEntity(userRequest);
         User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
 
-        existingUser.setUsername(userRequest.getUsername());
-        existingUser.setEmail(userRequest.getEmail());
-        existingUser.setPassword(userRequest.getPassword());
-        existingUser.setFirstname(userRequest.getFirstname());
-        existingUser.setLastname(userRequest.getLastname());
+        existingUser.setUsername(userToUpdate.getUsername());
+        existingUser.setEmail(userToUpdate.getEmail());
+        existingUser.setPassword(userToUpdate.getPassword());
+        existingUser.setFirstname(userToUpdate.getFirstname());
+        existingUser.setLastname(userToUpdate.getLastname());
 
         return UserMapper.toUserResponse(userRepository.save(existingUser));
     }
@@ -177,23 +182,23 @@ public class UserService {
         if(userRequest == null) {
             throw new IllegalArgumentException("UserRequest cannot be null");
         }
-
+        User userToUpdate = UserMapper.toUserEntity(userRequest);
         User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
 
-        if(userRequest.getUsername() != null && !userRequest.getUsername().isEmpty()) {
-            existingUser.setUsername(userRequest.getUsername());
+        if(userToUpdate.getUsername() != null && !userToUpdate.getUsername().isEmpty()) {
+            existingUser.setUsername(userToUpdate.getUsername());
         }
-        if(userRequest.getEmail() != null && !userRequest.getEmail().isEmpty()) {
-            existingUser.setEmail(userRequest.getEmail());
+        if(userToUpdate.getEmail() != null && !userToUpdate.getEmail().isEmpty()) {
+            existingUser.setEmail(userToUpdate.getEmail());
         }
-        if(userRequest.getPassword() != null && !userRequest.getPassword().isEmpty()){
-            existingUser.setPassword(userRequest.getPassword());
+        if(userToUpdate.getPassword() != null && !userToUpdate.getPassword().isEmpty()){
+            existingUser.setPassword(userToUpdate.getPassword());
         }
-        if(userRequest.getFirstname() != null && !userRequest.getFirstname().isEmpty()){
-            existingUser.setFirstname(userRequest.getFirstname());
+        if(userToUpdate.getFirstname() != null && !userToUpdate.getFirstname().isEmpty()){
+            existingUser.setFirstname(userToUpdate.getFirstname());
         }
-        if(userRequest.getLastname() != null && !userRequest.getLastname().isEmpty()){
-            existingUser.setLastname(userRequest.getLastname());
+        if(userToUpdate.getLastname() != null && !userToUpdate.getLastname().isEmpty()){
+            existingUser.setLastname(userToUpdate.getLastname());
         }
 
         return UserMapper.toUserResponse(userRepository.save(existingUser));

@@ -81,7 +81,7 @@ public class UserServiceTest {
     @DisplayName("Test getUserById method")
     void testGetUserById() {
         when(userRepository.findById(1)).thenReturn(java.util.Optional.of(sampleUser));
-        when(userRepository.existsById(1)).thenReturn(true);
+        //when(userRepository.existsById(1)).thenReturn(true);
 
         User user = userService.getUserById(1);
         assertNotNull(user);
