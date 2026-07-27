@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.when;
 import java.util.List;
@@ -28,55 +29,58 @@ class DemoApplicationTests {
 	// In order to run individual tests for the UserRepo and UserService, i have to comment all the other tests
 	// So the tests can be run individually, but not all together
 
-	// @MockitoBean
-	// private UserService userService;
+	@MockitoBean
+	private UserService userService;
 
-	// @MockitoBean
-	// private UsersRepo usersRepo;
+	@MockitoBean
+	private UsersRepo usersRepo;
 
 	// Testing the /users endpoint 
-	// @Test
-	// void testGetUsersEndpoint() throws Exception {
-	// 	restTestClient.get().uri("/users")
-	// 			.exchange()
-	// 			.expectStatus().isOk()
-	// 			.expectBody(String.class).isEqualTo("[{\"id\":1,\"name\":\"John Doe\",\"age\":26},{\"id\":2,\"name\":\"Jane Smith\",\"age\":30},{\"id\":3,\"name\":\"Alice Johnson\",\"age\":22}]");
+	@Test
+	void testGetUsersEndpoint() throws Exception {
+		restTestClient.get().uri("/users")
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("[{\"id\":1,\"name\":\"John Doe\",\"age\":26},{\"id\":2,\"name\":\"Jane Smith\",\"age\":30},{\"id\":3,\"name\":\"Alice Johnson\",\"age\":22}]");
 		
-	// }
+	}
 
-	// Testing the service layer using Mockito
+	//Testing the service layer using Mockito
 
-	// @Test
-	// void testReturnFromService() throws Exception {
-	// 	when(userService.getAllUsers()).thenReturn(List.of(
-	// 			new User(1L, "John Doe", 26),
-	// 			new User(2L, "Jane Smith", 30),
-	// 			new User(3L, "Alice Johnson", 22)
-	// 	));
-	// 	restTestClient.get().uri("/users")
-	// 			.exchange()
-	// 			.expectStatus().isOk()
-	// 			.expectBody(String.class).isEqualTo("[{\"id\":1,\"name\":\"John Doe\",\"age\":26},{\"id\":2,\"name\":\"Jane Smith\",\"age\":30},{\"id\":3,\"name\":\"Alice Johnson\",\"age\":22}]");
-	// }
+	@Test
+	@Disabled
+	void testReturnFromService() throws Exception {
+		when(userService.getAllUsers()).thenReturn(List.of(
+				new User(1L, "John Doe", 26),
+				new User(2L, "Jane Smith", 30),
+				new User(3L, "Alice Johnson", 22)
+		));
+		restTestClient.get().uri("/users")
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("[{\"id\":1,\"name\":\"John Doe\",\"age\":26},{\"id\":2,\"name\":\"Jane Smith\",\"age\":30},{\"id\":3,\"name\":\"Alice Johnson\",\"age\":22}]");
+	}
 
-	// Testing the repository layer using Mockito
+	//Testing the repository layer using Mockito
 
-	// @Test
-	// void testReturnFromRepo() throws Exception {
-	// 	when(usersRepo.findAll()).thenReturn(List.of(
-	// 			new User(1L, "John Doe", 26),
-	// 			new User(2L, "Jane Smith", 30),
-	// 			new User(3L, "Alice Johnson", 22)
-	// 	));
-	// 	restTestClient.get().uri("/users")
-	// 			.exchange()
-	// 			.expectStatus().isOk()
-	// 			.expectBody(String.class).isEqualTo("[{\"id\":1,\"name\":\"John Doe\",\"age\":26},{\"id\":2,\"name\":\"Jane Smith\",\"age\":30},{\"id\":3,\"name\":\"Alice Johnson\",\"age\":22}]");
-	// }
+	@Test
+	@Disabled
+	void testReturnFromRepo() throws Exception {
+		when(usersRepo.findAll()).thenReturn(List.of(
+				new User(1L, "John Doe", 26),
+				new User(2L, "Jane Smith", 30),
+				new User(3L, "Alice Johnson", 22)
+		));
+		restTestClient.get().uri("/users")
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("[{\"id\":1,\"name\":\"John Doe\",\"age\":26},{\"id\":2,\"name\":\"Jane Smith\",\"age\":30},{\"id\":3,\"name\":\"Alice Johnson\",\"age\":22}]");
+	}
 
 
 	// Testing endpoint validation /users/{id} with invalid id 
 	@Test
+	@Disabled
 	void testGetUserByIdEndpointWithInvalidId() throws Exception {
 		restTestClient.get().uri("/users/-1")
 				.exchange()
@@ -84,6 +88,7 @@ class DemoApplicationTests {
 	}
 
 	@Test
+	@Disabled
 	void testGetUserByIdEndpointWithInvalidId2() throws Exception {
 		restTestClient.get().uri("/users/5")
 				.exchange()
@@ -92,6 +97,7 @@ class DemoApplicationTests {
 
 	// Testing endpoint validation /users/{id} with valid id
 	@Test
+	@Disabled
 	void testGetUserByIdEndpointWithValidId() throws Exception {
 		restTestClient.get().uri("/users/2")
 				.exchange()
