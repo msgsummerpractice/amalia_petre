@@ -98,4 +98,34 @@ public class UserService {
     public int countUsers() {
         return userRepository.countUsers();
     }
+
+    // Partial update of a user
+    public User partialUpdateUser(Integer id, User user) {
+        if(id == null || id <= 0) {
+            throw new IllegalArgumentException("Invalid user ID: " + id);
+        }
+        if(user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+
+        if(!user.getUsername().isEmpty()) {
+            existingUser.setUsername(user.getUsername());
+        }
+        if(!user.getEmail().isEmpty()) {
+            existingUser.setEmail(user.getEmail());
+        }
+        if(!user.getPassword().isEmpty()){
+            existingUser.setPassword(user.getPassword());
+        }
+        if(!user.getFirstname().isEmpty()){
+            existingUser.setFirstname(user.getFirstname());
+        }
+        if(!user.getLastname().isEmpty()){
+            existingUser.setLastname(user.getLastname());
+        }
+        return userRepository.save(existingUser);
+
+    }
 }
