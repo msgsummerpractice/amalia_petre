@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.spring_data_jpa.model.User;
+import com.example.spring_data_jpa.model.UserRequest;
 import com.example.spring_data_jpa.repository.UserRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,6 +31,7 @@ public class UserServiceTest {
     private UserService userService;
 
     private User sampleUser;
+    private UserRequest sampleUserRequest;
     private List<User> sampleUserList;
 
     @BeforeEach
@@ -45,6 +47,13 @@ public class UserServiceTest {
         sampleUserList = List.of(sampleUser,
                 new User(2, "anotheruser", "another@example.com", "password", "Another", "User"),
                 new User(3, "thirduser", "third@example.com", "password", "Third", "User"));
+
+        sampleUserRequest = new UserRequest();
+        sampleUserRequest.setUsername("testuser");
+        sampleUserRequest.setEmail("email@example.com");
+        sampleUserRequest.setPassword("password");
+        sampleUserRequest.setFirstname("Test");
+        sampleUserRequest.setLastname("User");
     }
 
     @Test
@@ -137,7 +146,6 @@ public class UserServiceTest {
         assertEquals(3, count);
     }
 
-
     // ----------------------- INVALID TEST CASES -----------------------
 
     @Test
@@ -190,4 +198,5 @@ public class UserServiceTest {
     void testGetTop10UsersByUsername_Invalid() {
         assertThrows(IllegalArgumentException.class, () -> userService.getTop10UsersByUsername(""));
     }
+
 }

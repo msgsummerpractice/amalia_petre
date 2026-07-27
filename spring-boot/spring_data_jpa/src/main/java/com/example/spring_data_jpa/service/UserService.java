@@ -2,6 +2,10 @@ package com.example.spring_data_jpa.service;
 
 import java.util.List;
 import com.example.spring_data_jpa.model.User;
+import com.example.spring_data_jpa.model.UserMapper;
+import com.example.spring_data_jpa.model.UserRequest;
+import com.example.spring_data_jpa.model.UserResponse;
+
 import org.springframework.stereotype.Service;
 import com.example.spring_data_jpa.repository.UserRepository;
 
@@ -35,7 +39,7 @@ public class UserService {
         if(!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found with ID: " + id);
         }
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
     }
 
     // Retrieve a user by email
@@ -99,7 +103,7 @@ public class UserService {
         return userRepository.countUsers();
     }
 
-    // Partial update of a user
+    // Patch update of a user
     public User partialUpdateUser(Integer id, User user) {
         if(id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid user ID: " + id);
@@ -127,5 +131,85 @@ public class UserService {
         }
         return userRepository.save(existingUser);
 
+    }
+
+    // ------------------------------------ DTO METHODS -----------------------------------
+
+    // Create a new user using DTO
+    public UserResponse createUserFromDTO(UserRequest userRequest) {
+        if(userRequest == null) {
+            throw new IllegalArgumentException("UserRequest cannot be null");
+        }
+        User user = new User();
+        user.setUsername(userRequest.getUsername());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(userRequest.getPassword());
+        user.setFirstname(userRequest.getFirstname());
+        user.setLastname(userRequest.getLastname());
+        return UserMapper.toUserResponse(userRepository.save(user));
+    }
+
+    // Update a user by ID using DTO
+    public UserResponse updateUserFromDTO(Integer id, UserRequest userRequest) {
+        if(id == null || id <= 0) {
+            throw new IllegalArgumentException("Invalid user ID: " + id);
+        }
+        if(userRequest == null) {
+            throw new IllegalArgumentException("UserRequest cannot be null");
+        }
+
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+
+        existingUser.setUsername(userRequest.getUsername());
+        existingUser.setEmail(userRequest.getEmail());
+        existingUser.setPassword(userRequest.getPassword());
+        existingUser.setFirstname(userRequest.getFirstname());
+        existingUser.setLastname(userRequest.getLastname());
+
+        return UserMapper.toUserResponse(userRepository.save(existingUser));
+    }
+
+    // Patch update of a user using DTO
+    public UserResponse partialUpdateUserFromDTO(Integer id, UserRequest userRequest) {
+        if(id == null || id <= 0) {
+            throw new IllegalArgumentException("Invalid user ID: " + id);
+        }
+        if(userRequest == null) {
+            throw new IllegalArgumentException("UserRequest cannot be null");
+        }
+
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+
+        if(userRequest.getUsername() != null && !userRequest.getUsername().isEmpty()) {
+            existingUser.setUsername(userRequest.getUsername());
+        }
+        if(userRequest.getEmail() != null && !userRequest.getEmail().isEmpty()) {
+            existingUser.setEmail(userRequest.getEmail());
+        }
+        if(userRequest.getPassword() != null && !userRequest.getPassword().isEmpty()){
+            existingUser.setPassword(userRequest.getPassword());
+        }
+        if(userRequest.getFirstname() != null && !userRequest.getFirstname().isEmpty()){
+            existingUser.setFirstname(userRequest.getFirstname());
+        }
+        if(userRequest.getLastname() != null && !userRequest.getLastname().isEmpty()){
+            existingUser.setLastname(userRequest.getLastname());
+        }
+
+        return UserMapper.toUserResponse(userRepository.save(existingUser));
+    }
+
+    // Delete a user by ID using DTO
+    public void deleteUserFromDTO(Integer id) {
+        deleteUser(id);
+    }
+
+    // Get a user by ID and return as UserResponse DTO
+    public UserResponse getUserByIdFromDTO(Integer id) {
+        return UserMapper.toUserResponse(getUserById(id));
+    }
+
+    public UserResponse getUserByEmailFromDTO(String email) {
+        return UserMapper.toUserResponse(getUserByEmail(email));
     }
 }

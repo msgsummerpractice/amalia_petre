@@ -1,5 +1,5 @@
 package com.example.spring_data_jpa.model;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -25,6 +25,7 @@ public class User {
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "userame", nullable = false, unique = true)
     private String username;
     private String email;
     private String password;

@@ -20,7 +20,7 @@ public class UserController {
     @Autowired
     private ConfiguratieVehicul configuratieVehicul;
 
-    Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController() {
         System.out.println("UserController initialized");
