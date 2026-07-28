@@ -4,12 +4,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.MediaType;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.web.PageableDefault;
 import com.example.spring_data_jpa.model.UserRequest;
 import com.example.spring_data_jpa.model.UserResponse;
 import com.example.spring_data_jpa.model.User;
 import com.example.spring_data_jpa.service.UserService;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,18 +36,23 @@ public class UserController {
         this.userService = userService;
     }
 
+    // Pagination for the GET /users endpoint that returns the first 10 users
+    // Only did pagination for this method because a single user (email is unique
+    // and username is unique)
     @GetMapping(produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
     })
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<Page<User>> getUsers(@PageableDefault(size = 7) Pageable pageable) {
+        ;
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 
-    // For now, 404 status codes are returned only for the Get (By ID, By Email, By Username) methods, but not for the other methods
-    // The exercise said: "Use appropriate HTTP status codes for success and 
-    // error responses (e.g., 201 Created for successful POST, 404 Not Found for invalid IDs)."
+    // For now, 404 status codes are returned only for the Get (By ID, By Email, By
+    // Username) methods, but not for the other methods
+    // The exercise said: "Use appropriate HTTP status codes for success and
+    // error responses (e.g., 201 Created for successful POST, 404 Not Found for
+    // invalid IDs)."
 
     @GetMapping(value = "/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
@@ -71,9 +80,6 @@ public class UserController {
     public ResponseEntity<User> getUserByEmail(@PathVariable String email,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
         User user = userService.getUserByEmail(email);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(user);
         } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
@@ -90,9 +96,6 @@ public class UserController {
     public ResponseEntity<User> getUserByUsername(@PathVariable String username,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
         User user = userService.getUserByUsername(username);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(user);
         } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
@@ -102,6 +105,7 @@ public class UserController {
         }
     }
 
+    // Added validation for the POST method
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -111,16 +115,37 @@ public class UserController {
     })
     public ResponseEntity<User> createUser(@RequestBody User user,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
-        User createdUser = userService.createUser(user);
-        if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
-            return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_XML).body(createdUser);
-        } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
-            return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(createdUser);
+
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty() || user.getUsername() == null
+                || user.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email and username cannot be null or empty");
+        } else if (user.getId() != null) {
+            throw new IllegalArgumentException("ID must be null for new users");
+        } else if (user.getEmail().length() > 50 || user.getUsername().length() > 50) {
+            throw new IllegalArgumentException("Email and username must not exceed 50 characters");
+        } else if (!user.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new IllegalArgumentException("Invalid email format");
+        } else if (user.getFirstname() == null || user.getFirstname().trim().isEmpty() || user.getLastname() == null
+                || user.getLastname().trim().isEmpty()) {
+            throw new IllegalArgumentException("Firstname and lastname cannot be null or empty");
+        } else if (user.getFirstname().length() > 50 || user.getLastname().length() > 50) {
+            throw new IllegalArgumentException("Firstname and lastname must not exceed 50 characters");
         } else {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            User createdUser = userService.createUser(user);
+            if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
+                return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_XML)
+                        .body(createdUser);
+            } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
+                return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
+                        .body(createdUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            }
         }
+
     }
 
+    // Added validation for the PUT method
     @PutMapping(value = "/{id}", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -130,13 +155,23 @@ public class UserController {
     })
     public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
-        User updatedUser = userService.updateUser(id, user);
-        if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(updatedUser);
-        } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(updatedUser);
+
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty() || user.getUsername() == null
+                || user.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email and username cannot be null or empty");
+        } else if (user.getEmail().length() > 50 || user.getUsername().length() > 50) {
+            throw new IllegalArgumentException("Email and username must not exceed 50 characters");
+        } else if (!user.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new IllegalArgumentException("Invalid email format");
         } else {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            User updatedUser = userService.updateUser(id, user);
+            if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
+                return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(updatedUser);
+            } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
+                return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(updatedUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            }
         }
     }
 
@@ -167,7 +202,7 @@ public class UserController {
 
     // POST - merge
     // IN BRUNO NU PUNE ID
-    // Nu merge cu XML, este o problema cu Jackson, nu stiu cum sa o rezolv, merge doar cu JSON
+    // Added validation for the POST method using DTOs
     @PostMapping(value = "/dto", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -177,13 +212,29 @@ public class UserController {
     })
     public UserResponse createUserDTO(@Valid @RequestBody UserRequest userRequest,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
-        UserResponse createdUser = userService.createUserFromDTO(userRequest);
-        if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
-            return createdUser;
-        } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
-            return createdUser;
+        if (userRequest.getEmail() == null || userRequest.getEmail().trim().isEmpty()
+                || userRequest.getUsername() == null
+                || userRequest.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email and username cannot be null or empty");
+        } else if (userRequest.getEmail().length() > 50 || userRequest.getUsername().length() > 50) {
+            throw new IllegalArgumentException("Email and username must not exceed 50 characters");
+        } else if (!userRequest.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new IllegalArgumentException("Invalid email format");
+        } else if (userRequest.getFirstname() == null || userRequest.getFirstname().trim().isEmpty()
+                || userRequest.getLastname() == null
+                || userRequest.getLastname().trim().isEmpty()) {
+            throw new IllegalArgumentException("Firstname and lastname cannot be null or empty");
+        } else if (userRequest.getFirstname().length() > 50 || userRequest.getLastname().length() > 50) {
+            throw new IllegalArgumentException("Firstname and lastname must not exceed 50 characters");
         } else {
-            throw new UnsupportedOperationException("Unsupported media type: " + acceptHeader);
+            UserResponse createdUser = userService.createUserFromDTO(userRequest);
+            if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
+                return createdUser;
+            } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
+                return createdUser;
+            } else {
+                throw new UnsupportedOperationException("Unsupported media type: " + acceptHeader);
+            }
         }
     }
 
@@ -192,7 +243,7 @@ public class UserController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
     })
-    public UserResponse getUserDTO(@PathVariable Integer id,
+    public UserResponse getUserByIdDTO(@PathVariable Integer id,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
         UserResponse user = userService.getUserByIdFromDTO(id);
         if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
@@ -204,7 +255,10 @@ public class UserController {
         }
     }
 
-    // PUT - nu am mai testat
+    // PUT - merge
+    // Added validation for the PUT method using DTOs
+    // Because we are using DTOs, the UserRequest already has validation, so the one here is redundat and won't do anything, 
+    // but I left it here just in case
     @PutMapping(value = "/dto/{id}", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE
@@ -214,13 +268,23 @@ public class UserController {
     })
     public ResponseEntity<UserResponse> updateUserDTO(@PathVariable Integer id, @RequestBody UserRequest userRequest,
             @RequestHeader(name = "Accept", defaultValue = "application/json") String acceptHeader) {
-        UserResponse updatedUser = userService.updateUserFromDTO(id, userRequest);
-        if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(updatedUser);
-        } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(updatedUser);
+        
+        if (userRequest.getEmail() == null || userRequest.getEmail().trim().isEmpty() || userRequest.getUsername() == null
+                || userRequest.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email and username cannot be null or empty");
+        } else if (userRequest.getEmail().length() > 50 || userRequest.getUsername().length() > 50) {
+            throw new IllegalArgumentException("Email and username must not exceed 50 characters");
+        } else if (!userRequest.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new IllegalArgumentException("Invalid email format");
         } else {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            UserResponse updatedUser = userService.updateUserFromDTO(id, userRequest);
+            if (acceptHeader.equals(MediaType.APPLICATION_XML_VALUE)) {
+                return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(updatedUser);
+            } else if (acceptHeader.equals(MediaType.APPLICATION_JSON_VALUE)) {
+                return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(updatedUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            }
         }
     }
 

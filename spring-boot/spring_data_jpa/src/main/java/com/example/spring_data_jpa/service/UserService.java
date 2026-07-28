@@ -1,6 +1,8 @@
 package com.example.spring_data_jpa.service;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.example.spring_data_jpa.model.User;
 import com.example.spring_data_jpa.model.UserMapper;
 import com.example.spring_data_jpa.model.UserRequest;
@@ -26,9 +28,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // Retrieve all users
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    // Retrieve all users - updated to support pagination
+    
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     // Retrieve a user by ID
@@ -38,34 +41,34 @@ public class UserService {
         }
         // Had to comment this part so that my controller can handle the exception and return a 404 status code instead of throwing an exception
 
-        // if(!userRepository.existsById(id)) {
-        //     throw new IllegalArgumentException("User not found with ID: " + id);
-        // }
+        if(!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found with ID: " + id);
+        }
         return userRepository.findById(id).orElse(null);
     }
 
     // Retrieve a user by email
     public User getUserByEmail(String email) {
-        // if(email == null || email.trim().isEmpty()) {
-        //     throw new IllegalArgumentException("Email cannot be null or empty");
-        // }
+        if(email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
 
         User user = userRepository.findByEmail(email);
-        // if(user == null) {
-        //     throw new IllegalArgumentException("User not found with email: " + email);
-        // }
+        if(user == null) {
+            throw new IllegalArgumentException("User not found with email: " + email);
+        }
         return user;
     }
 
     // Retrieve a user by username
     public User getUserByUsername(String username) {
-        // if(username == null || username.trim().isEmpty()) {
-        //     throw new IllegalArgumentException("Username cannot be null or empty");
-        // }
+        if(username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
         User user = userRepository.findByUsername(username);
-        // if(user == null) {
-        //     throw new IllegalArgumentException("User not found with username: " + username);
-        // }
+        if(user == null) {
+            throw new IllegalArgumentException("User not found with username: " + username);
+        }
         return user;
     }
 
