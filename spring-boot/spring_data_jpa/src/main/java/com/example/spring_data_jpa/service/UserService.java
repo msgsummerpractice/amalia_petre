@@ -140,6 +140,10 @@ public class UserService {
 
     // ------------------------------------ DTO METHODS -----------------------------------
 
+    public Page<UserResponse> getAllUsersDTO(Pageable pageable) {
+        return userRepository.findAll(pageable).map(UserMapper::toUserResponse);
+    }
+
     // Create a new user using DTO
     public UserResponse createUserFromDTO(UserRequest userRequest) {
         if(userRequest == null) {

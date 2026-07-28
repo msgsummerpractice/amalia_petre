@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.example.spring_data_jpa.model.Role;
 import com.example.spring_data_jpa.model.User;
 import com.example.spring_data_jpa.model.UserRequest;
 import com.example.spring_data_jpa.repository.UserRepository;
@@ -37,9 +38,14 @@ public class UserServiceTest {
     private User sampleUser;
     private UserRequest sampleUserRequest;
     private List<User> sampleUserList;
+    private Role role;
 
     @BeforeEach
     public void setUp() {
+        role = new Role();
+        role.setId(1);
+        role.setName("ROLE_USER");
+
         sampleUser = new User();
         sampleUser.setId(1);
         sampleUser.setUsername("testuser");
@@ -47,10 +53,11 @@ public class UserServiceTest {
         sampleUser.setPassword("password");
         sampleUser.setFirstname("Test");
         sampleUser.setLastname("User");
+        sampleUser.setRole(role);
 
         sampleUserList = List.of(sampleUser,
-                new User(2, "anotheruser", "another@example.com", "password", "Another", "User"),
-                new User(3, "thirduser", "third@example.com", "password", "Third", "User"));
+                new User(2, "anotheruser", "another@example.com", "password", "Another", "User", role),
+                new User(3, "thirduser", "third@example.com", "password", "Third", "User", role));
 
         sampleUserRequest = new UserRequest();
         sampleUserRequest.setUsername("testuser");

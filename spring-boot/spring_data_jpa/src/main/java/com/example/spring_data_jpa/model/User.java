@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
@@ -18,18 +20,21 @@ import jakarta.persistence.GenerationType;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
-@com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement(localName = "user") 
+@ToString(exclude = "role")
 public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String username;
     private String email;
     private String password;
     private String firstname;
     private String lastname;
+    
+    @ManyToOne
+    @JoinColumn(name = "roleid")
+    private Role role;
     
 }
