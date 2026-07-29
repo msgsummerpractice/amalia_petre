@@ -1,8 +1,8 @@
-async function doShowRandomDog(): Promise<void> {
+async function doShowRandomDog() {
     try {
-        let response: Response = await fetch('https://dog.ceo/api/breeds/image/random');
-        let data: { message: string } = await response.json();
-        let imgElement: HTMLImageElement = document.getElementById('dogImage') as HTMLImageElement;
+        const response = await fetch('https://dog.ceo/api/breeds/image/random');
+        const data = await response.json();
+        const imgElement = document.getElementById('dogImage');
         imgElement.src = data.message;
         imgElement.style.display = 'block';
     } catch (error) {
