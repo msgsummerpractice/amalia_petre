@@ -4,10 +4,12 @@ import { RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
+import { DogsComponent } from './Dog/dog.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatButton, MatToolbarModule, MatSidenavModule, MatIconModule],
+  imports: [RouterOutlet, MatButton, MatToolbarModule, MatSidenavModule, MatIconModule, DogsComponent, CommonModule],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

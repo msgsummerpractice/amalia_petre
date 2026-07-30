@@ -42,11 +42,14 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="text-center p-8">
       <h1>Random Dog Image</h1>
-      <div *ngIf="dogs$ | async as dogs">
-        <img [src]="dogs.message" alt="Random Dog" />
-      </div>
+      <button (click)="fetchRandomDog()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Fetch Random Dog Image
+      </button>
+      <p *ngIf="loading()" class="text-gray-600 mt-2">Loading...</p>
+      <p *ngIf="error()" class="text-red-500 mt-2">Error: {{ error() }}</p>
+      <img *ngIf="dog() as d" [src]="d.message" alt="Random Dog" class="mt-4 rounded-lg shadow-md" />
     </div>
   </main>
 </div>

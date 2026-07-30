@@ -1,17 +1,37 @@
-import { Component } from '@angular/core';
-import { DogService } from './dog.service';
-import { Observable } from 'rxjs';
-import { DogApiResponse } from './dog.service';
+import { Component, signal } from '@angular/core';
+import { DogService, DogApiResponse } from './dog.service';
+import { CommonModule } from '@angular/common';
+import {MatIconModule} from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-dog',
   templateUrl: './dog.component.html',
-  styleUrls: ['./dog.component.css'],
+  standalone: true,
+  imports: [CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton],
 })
-export class DogsComponent {
-  dogs$: Observable<DogApiResponse>; 
 
-  constructor(private dogService: DogService) {
-    this.dogs$ = this.dogService.getRandomDog(); 
+export class DogsComponent {
+  dog = signal<DogApiResponse | null>(null);
+  loading = signal(false);
+  error = signal<string | null>(null);
+
+  constructor(private dogService: DogService) {}
+
+  fetchRandomDog(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.dogService.getRandomDog().subscribe({
+      next: (response) => {
+        this.dog.set(response);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Failed to fetch dog');
+        this.loading.set(false);
+      },
+    });
   }
 }
