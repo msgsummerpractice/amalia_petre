@@ -6,13 +6,15 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import { DogsComponent } from './Dog/dog.component';
 import { CommonModule } from '@angular/common';
+import { AuthStatusDirective } from './AuthStatusDirective';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatButton, MatToolbarModule, MatSidenavModule, MatIconModule, DogsComponent, CommonModule],
+  imports: [RouterOutlet, MatButton, MatToolbarModule, MatSidenavModule, MatIconModule, DogsComponent, CommonModule, AuthStatusDirective],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
 export class App {
   protected readonly title = signal('my-app');
+
 }
