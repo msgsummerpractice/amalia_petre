@@ -1,23 +1,43 @@
 <div class="w-full h-full bg-gradient-to-r from-[#EEAECA] via-[#AEEED3] to-[#EEAECA]">
     <div class="bg-[#D6F1FF] rounded-[30px] shadow-md p-6 w-90 h-120 flex flex-col items-center mx-auto">
-        <h2 class="text-2xl font-semibold mb-2">Login</h2>
+        <h2 class="text-2xl font-semibold mb-2 text-[#EB5ECC]">Login</h2>
         <p class="text-gray-600 mt-2">Please enter your credentials to log in.</p>
-        <form class="mt-15 space-y-15" method="POST">
+        <form [formGroup]="loginFormGroup" (ngSubmit)="onFormSubmit()" class="mt-15 space-y-15 ">
+
+            
             <input
-                type="text"
-                placeholder="Username"
-                class="border border-gray-300 rounded px-4 py-2 mb-4 w-full bg-white"
+                formControlName="email"
+                type="email"
+                placeholder="Email"
+                required
+                class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
             />
+            <!-- when the email input is invalid and touched, the error message should be shown but it isn't showing -->
+            @if (loginFormGroup.controls.email.invalid){
+                <small class="text-red-500 text-sm ml-10 p-2 ">
+                    Email is required and must be valid.
+                </small>
+            }
             <input
+                formControlName="password"
                 type="password"
                 placeholder="Password"
-                class="border border-gray-300 rounded px-4 py-2 mb-4 w-full bg-white"
+                required
+                class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
             />
+            @if (loginFormGroup.controls.password.invalid){
+                <small class="text-red-500 text-sm flex justify-center ">
+                    Password is required.
+                </small>
+            }
+
+            <button
+                type="submit"
+                *ngIf="loginFormGroup.valid"
+                class="bg-[#FFC2F2] hover:bg-[#FA84E4] text-white font-bold py-3 px-5 rounded-[20px] cursor-pointer mt-6 justify-center items-center w-full"
+            >
+                Login
+            </button>
         </form>
-        <input
-            type="submit"
-            value="Login"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-[20px] cursor-pointer mt-6"
-        />
     </div>
 </div>

@@ -1,5 +1,4 @@
 <div
-  *authStatus="true"
   class="w-full h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
 >
   <header>
@@ -21,7 +20,7 @@
 
   <main>
     <div class="text-center mb-10 p-12">
-      <h1 class="text-4xl font-bold mb-4">{{ 'Dog Gallery' | format }}</h1>
+      <h1 class="text-4xl font-bold mb-4">{{ 'dog gallery' | format }}</h1>
       <p class="text-lg text-gray-700">Different types of dogs</p>
     </div>
 
@@ -42,7 +41,8 @@
       </div>
     </div>
 
-    <div class="text-center p-8">
+    <!-- when authStatus is "false", the page is not visible -->
+    <div *authStatus="false"  class="text-center p-8">
       <h1>Random Dog Image</h1>
       <button
         (click)="fetchRandomDog()"

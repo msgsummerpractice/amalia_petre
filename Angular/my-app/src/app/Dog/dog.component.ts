@@ -8,12 +8,14 @@ import { MatButton } from '@angular/material/button';
 import { AuthStatusDirective } from '../AuthStatusDirective';
 import { RouterLink } from '@angular/router';
 import { FormatPipe } from '../TitleFormatPipe';
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-dog',
   templateUrl: './dog.component.html',
   standalone: true,
-  imports: [RouterLink,CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton, AuthStatusDirective, FormatPipe],
+  imports: [RouterLink,CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton, AuthStatusDirective, FormatPipe, ReactiveFormsModule],
   providers: [DogService]
 })
 
