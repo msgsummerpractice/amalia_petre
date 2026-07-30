@@ -8,10 +8,11 @@ import { DogsComponent } from './Dog/dog.component';
 import { CommonModule } from '@angular/common';
 import { AuthStatusDirective } from './AuthStatusDirective';
 import { RouterLink } from '@angular/router';
+import { FormatPipe } from './TitleFormatPipe';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterLink,RouterOutlet, MatButton, MatToolbarModule, MatSidenavModule, MatIconModule, DogsComponent, CommonModule, AuthStatusDirective],
+  imports: [FormatPipe, RouterLink,RouterOutlet, MatButton, MatToolbarModule, MatSidenavModule, MatIconModule, DogsComponent, CommonModule, AuthStatusDirective],
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })

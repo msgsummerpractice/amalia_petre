@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from './not-found/NotFoundComponent';
 import { DogsComponent } from './Dog/dog.component';
-import { Login } from './login/login';
+import { authGuard } from './AuthGuard';
 
 export const routes: Routes = [
    {
@@ -16,6 +16,7 @@ export const routes: Routes = [
   {
     path: 'home',
     component: DogsComponent,
+    canActivate: [authGuard],
   },
   {
     path: '**',

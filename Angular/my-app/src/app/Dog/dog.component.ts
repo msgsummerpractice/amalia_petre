@@ -7,12 +7,14 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButton } from '@angular/material/button';
 import { AuthStatusDirective } from '../AuthStatusDirective';
 import { RouterLink } from '@angular/router';
+import { FormatPipe } from '../TitleFormatPipe';
 
 @Component({
   selector: 'app-dog',
   templateUrl: './dog.component.html',
   standalone: true,
-  imports: [RouterLink,CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton, AuthStatusDirective],
+  imports: [RouterLink,CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton, AuthStatusDirective, FormatPipe],
+  providers: [DogService]
 })
 
 export class DogsComponent {

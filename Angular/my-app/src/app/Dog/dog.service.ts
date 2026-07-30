@@ -7,9 +7,7 @@ export interface DogApiResponse {
   status: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DogService {
   private apiUrl = 'https://dog.ceo/api/breeds/image/random';
   constructor(private http: HttpClient) {}
