@@ -1,13 +1,13 @@
-<div *authStatus="true" class="w-full h-200 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+<div
+  *authStatus="true"
+  class="w-full h-200 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+>
   <header>
     <mat-toolbar color="primary-container" id="toolbar">
-      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="home"
-        ><a mat-button href="https://material.angular.dev/components/toolbar/examples"></a
-      ></mat-icon>
+      <a mat-button routerLink="/home">Home</a>
 
-      <a mat-button href="https://www.notino.ro/">Products</a>
-      <a mat-button href="https://www.google.com/finance/beta">Pricing</a>
-      <a mat-button>About</a>
+      <a mat-button routerLink="/login">Login</a>
+      <a mat-button routerLink="/about">About</a>
     </mat-toolbar>
 
     <div class="flex justify-end p-4">
@@ -44,12 +44,20 @@
 
     <div class="text-center p-8">
       <h1>Random Dog Image</h1>
-      <button (click)="fetchRandomDog()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <button
+        (click)="fetchRandomDog()"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
         Fetch Random Dog Image
       </button>
       <p *ngIf="loading()" class="text-gray-600 mt-2">Loading...</p>
       <p *ngIf="error()" class="text-red-500 mt-2">Error: {{ error() }}</p>
-      <img *ngIf="dog() as d" [src]="d.message" alt="Random Dog" class="mt-4 rounded-lg shadow-md" />
+      <img
+        *ngIf="dog() as d"
+        [src]="d.message"
+        alt="Random Dog"
+        class="mt-4 rounded-lg shadow-md"
+      />
     </div>
   </main>
 </div>

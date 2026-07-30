@@ -6,12 +6,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButton } from '@angular/material/button';
 import { AuthStatusDirective } from '../AuthStatusDirective';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dog',
   templateUrl: './dog.component.html',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton, AuthStatusDirective],
+  imports: [RouterLink,CommonModule, MatIconModule, MatToolbarModule, MatSidenavModule, MatButton, AuthStatusDirective],
 })
 
 export class DogsComponent {
