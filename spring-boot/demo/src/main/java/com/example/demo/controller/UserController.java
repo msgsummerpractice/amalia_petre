@@ -31,7 +31,7 @@ public class UserController {
 
     // Inject the user ID from application.properties
     @Value("${user.id}")
-    private Long id;
+    private Long injectedId;
 
     @GetMapping("/users")
     public List<User> getUsers() {
@@ -56,7 +56,7 @@ public class UserController {
     
     @RequestMapping("/userSpecial")
     public User getUserSpecial() {
-        return userService.getUserById(id);
+        return userService.getUserById(injectedId);
     }
 
     @RequestMapping("/vehicul")

@@ -20,7 +20,7 @@ public class AdminMfaAuthorizationManager implements AuthorizationManager<Object
     public AuthorizationResult authorize(
         Supplier<? extends Authentication> authentication, Object context) {
 
-        if ("admin".equals(authentication.get().getName())) {
+        if ("ROLE_ADMIN".equals(authentication.get().getName())) {
             return this.mfa.authorize(authentication, context);
         } else {
             return new AuthorizationDecision(true);

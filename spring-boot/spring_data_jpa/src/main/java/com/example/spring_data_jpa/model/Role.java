@@ -25,7 +25,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Role {
 
     @Id
@@ -38,4 +37,5 @@ public class Role {
 
     @Column(name = "rolename", nullable = false, unique = true)
     private String name;
+    
 }

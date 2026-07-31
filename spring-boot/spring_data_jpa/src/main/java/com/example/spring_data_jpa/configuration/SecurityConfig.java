@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**", "/login", "/ott/generate").permitAll()
                         .requestMatchers("/api/users/admin/**").access(admin)
+                        .requestMatchers("/api/users/user/**").hasRole("ROLE_USER")
                         .anyRequest().authenticated()
                 )
                 .oneTimeTokenLogin(ott -> ott

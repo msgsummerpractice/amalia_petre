@@ -7,11 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.example.spring_data_jpa.configuration.JwtTokenProvider;
+import com.example.spring_data_jpa.model.Role;
 import com.example.spring_data_jpa.model.SignInRequest;
 import com.example.spring_data_jpa.model.SignUpRequest;
 import com.example.spring_data_jpa.service.AuthService;
 import com.example.spring_data_jpa.model.SignInResponse;
 import com.example.spring_data_jpa.model.User;
+import com.example.spring_data_jpa.repository.RoleRepository;
 import com.example.spring_data_jpa.repository.UserRepository;
 
 @Service
@@ -28,6 +30,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public String login(SignInRequest loginDto) {
@@ -50,6 +55,8 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByUsername(registerDto.getUsername())) {
             throw new RuntimeException("Username is already taken!");
         }
+        Role userRole=roleRepository.findByName("ROLE_USER");
+        
 
         User user = new User();
         user.setUsername(registerDto.getUsername());
@@ -57,6 +64,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(registerDto.getEmail());
         user.setFirstname(registerDto.getFirstname());
         user.setLastname(registerDto.getLastname());
+        user.setRole(userRole); // Set the role to ROLE_USER
         userRepository.save(user);
 
         return "User registered successfully!";
