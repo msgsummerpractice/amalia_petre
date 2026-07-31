@@ -1,12 +1,17 @@
 package com.example.spring_data_jpa.configuration;
 
 import lombok.AllArgsConstructor;
-
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.time.Duration;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import java.util.List;
+
 import com.example.spring_data_jpa.service.CustomOneTimeTokenService;
 import org.springframework.security.authentication.ott.OneTimeTokenService;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -46,7 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**", "/login", "/ott/generate").permitAll()
                         .requestMatchers("/api/users/admin/**").access(admin)
-                        .requestMatchers("/api/users/user/**").hasRole("ROLE_USER")
+                        .requestMatchers("/api/users/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .oneTimeTokenLogin(ott -> ott
@@ -56,9 +61,22 @@ public class SecurityConfig {
                 .build();
     }
 
+    // @Bean
+    // public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    //     return configuration.getAuthenticationManager();
+    // }
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    AuthenticationManager authenticationManager(DaoAuthenticationProvider daoAuthenticationProvider) {
+        final List<AuthenticationProvider> providers = List.of(daoAuthenticationProvider);
+        return new ProviderManager(providers);
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+        final var authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
     }
 
     @Bean

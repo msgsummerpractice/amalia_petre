@@ -35,19 +35,27 @@ public class AuthServiceImpl implements AuthService {
     private RoleRepository roleRepository;
 
     @Override
-    public String login(SignInRequest loginDto) {
+    public SignInResponse login(SignInRequest loginDto) {
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDto.getUsername(),
-                loginDto.getPassword()
-        ));
+        // unauthenticated username and password token
+        final var unauthenticatedToken = UsernamePasswordAuthenticationToken.unauthenticated(loginDto.getUsername(), loginDto.getPassword());
+
+        // authenticated token
+        final var authentication = authenticationManager.authenticate(unauthenticatedToken);
+        // extract username from the authenticated token
+
+        (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User userDetails) {
+            String username = userDetails.getUsername();
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-
         String token = jwtTokenProvider.generateToken(authentication);
 
-        return token;
+        SignInResponse authResponseDto = new SignInResponse();
+        authResponseDto.setAccessToken(token);
+        authResponseDto.setExpiresInSeconds(jwtTokenProvider.getExpiresInSeconds());
+        return authResponseDto;
     }
 
     @Override

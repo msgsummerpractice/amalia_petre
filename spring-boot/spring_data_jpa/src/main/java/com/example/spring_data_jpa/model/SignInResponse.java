@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class SignInResponse {
     private String accessToken;
-    // private List<String> roles;
-    private String role;
+    private String tokenType = "Bearer";
+    private long expiresInSeconds;
 }
