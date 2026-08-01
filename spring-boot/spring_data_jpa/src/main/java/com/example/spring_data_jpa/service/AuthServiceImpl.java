@@ -1,12 +1,21 @@
 package com.example.spring_data_jpa.service;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.ott.OneTimeTokenAuthenticationToken;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.ott.GenerateOneTimeTokenRequest;
+import org.springframework.security.authentication.ott.OneTimeTokenService;
+import org.springframework.security.authentication.ott.OneTimeToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import com.example.spring_data_jpa.configuration.JwtTokenProvider;
+import com.example.spring_data_jpa.model.OttVerifyRequest;
 import com.example.spring_data_jpa.model.Role;
 import com.example.spring_data_jpa.model.SignInRequest;
 import com.example.spring_data_jpa.model.SignUpRequest;
@@ -15,6 +24,7 @@ import com.example.spring_data_jpa.model.SignInResponse;
 import com.example.spring_data_jpa.model.User;
 import com.example.spring_data_jpa.repository.RoleRepository;
 import com.example.spring_data_jpa.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -34,28 +44,61 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private OneTimeTokenService oneTimeTokenService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Override
     public SignInResponse login(SignInRequest loginDto) {
 
-        // unauthenticated username and password token
-        final var unauthenticatedToken = UsernamePasswordAuthenticationToken.unauthenticated(loginDto.getUsername(), loginDto.getPassword());
+        final var unauthenticatedToken = UsernamePasswordAuthenticationToken.unauthenticated(loginDto.getUsername(),
+                loginDto.getPassword());
 
-        // authenticated token
-        final var authentication = authenticationManager.authenticate(unauthenticatedToken);
-        // extract username from the authenticated token
+        authenticationManager.authenticate(unauthenticatedToken);
 
-        (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User userDetails) {
-            String username = userDetails.getUsername();
+        OneTimeToken ott = oneTimeTokenService.generate(new GenerateOneTimeTokenRequest(loginDto.getUsername()));
+
+        System.out.println("==========================================");
+        System.out.println("GENERATED OTT PIN: " + ott.getTokenValue());
+        System.out.println("==========================================");
+
+        SignInResponse response = new SignInResponse();
+        response.setMfaRequired(true);
+        response.setAccessToken(null);
+        return response;
+    }
+
+    @Override
+    public SignInResponse verifyOtt(OttVerifyRequest verifyDto) {
+
+        OneTimeTokenAuthenticationToken ottAuthenticationToken = new OneTimeTokenAuthenticationToken(verifyDto.getToken());
+
+        OneTimeToken consumed = oneTimeTokenService.consume(ottAuthenticationToken);
+
+        if (consumed == null || !consumed.getUsername().equals(verifyDto.getUsername())) {
+            throw new RuntimeException("Invalid or expired one-time token.(PIN)");
         }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(verifyDto.getUsername());
+
+        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getAuthorities(), null);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtTokenProvider.generateToken(authentication);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .toList();
 
-        SignInResponse authResponseDto = new SignInResponse();
-        authResponseDto.setAccessToken(token);
-        authResponseDto.setExpiresInSeconds(jwtTokenProvider.getExpiresInSeconds());
-        return authResponseDto;
+        SignInResponse response = new SignInResponse();
+        response.setMfaRequired(false);
+        response.setAccessToken(jwtTokenProvider.generateToken(authentication));
+        response.setTokenType("Bearer");
+        response.setExpiresInSeconds(jwtTokenProvider.getExpiresInSeconds());
+        response.setRoles(roles);
+
+        return response;
     }
 
     @Override
@@ -63,8 +106,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByUsername(registerDto.getUsername())) {
             throw new RuntimeException("Username is already taken!");
         }
-        Role userRole=roleRepository.findByName("ROLE_USER");
-        
+        Role userRole = roleRepository.findByName("ROLE_USER");
 
         User user = new User();
         user.setUsername(registerDto.getUsername());
