@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public SignInResponse verifyOtt(OttVerifyRequest verifyDto) {
-
+        System.out.println("Verifying OTT for user: " + verifyDto.getUsername() + " with token: " + verifyDto.getToken());
         OneTimeTokenAuthenticationToken ottAuthenticationToken = new OneTimeTokenAuthenticationToken(verifyDto.getToken());
 
         OneTimeToken consumed = oneTimeTokenService.consume(ottAuthenticationToken);

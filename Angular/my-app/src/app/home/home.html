@@ -4,9 +4,8 @@
   <header>
     <mat-toolbar color="primary-container" id="toolbar">
       <a mat-button routerLink="/home">Home</a>
-
-      <a mat-button routerLink="/login">Login</a>
       <a mat-button routerLink="/about">About</a>
+      <button mat-button (click)="onLogout()">Logout</button>
     </mat-toolbar>
 
     <div class="flex justify-end p-4">

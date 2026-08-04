@@ -1,43 +1,77 @@
 <div class="w-full h-full bg-gradient-to-r from-[#EEAECA] via-[#AEEED3] to-[#EEAECA]">
-    <div class="bg-[#D6F1FF] rounded-[30px] shadow-md p-6 w-90 h-120 flex flex-col items-center mx-auto">
-        <h2 class="text-2xl font-semibold mb-2 text-[#EB5ECC]">Login</h2>
+  <div
+    class="bg-[#D6F1FF] rounded-[30px] shadow-md p-6 w-90 h-120 flex flex-col items-center mx-auto"
+  >
+    <h2 class="text-2xl font-semibold mb-2 text-[#EB5ECC]">Login</h2>
+
+    @if (!mfaRequired()) {
+      <ng-container>
         <p class="text-gray-600 mt-2">Please enter your credentials to log in.</p>
-        <form [formGroup]="loginFormGroup" (ngSubmit)="onFormSubmit()" class="mt-15 space-y-15 ">
+        <form [formGroup]="loginFormGroup" (ngSubmit)="onFormSubmit()" class="mt-10 space-y-5">
+          <input
+            formControlName="username"
+            type="text"
+            placeholder="Username"
+            required
+            class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
+          />
+          <!-- when the username input is invalid and touched, the error message should be shown but it isn't showing -->
+          <div *ngIf="loginFormGroup.controls.username.invalid">
+            <small class="text-red-500 text-sm ml-10 p-2"> Username is required. </small>
+          </div>
 
-            
-            <input
-                formControlName="email"
-                type="email"
-                placeholder="Email"
-                required
-                class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
-            />
-            <!-- when the email input is invalid and touched, the error message should be shown but it isn't showing -->
-            @if (loginFormGroup.controls.email.invalid){
-                <small class="text-red-500 text-sm ml-10 p-2 ">
-                    Email is required and must be valid.
-                </small>
-            }
-            <input
-                formControlName="password"
-                type="password"
-                placeholder="Password"
-                required
-                class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
-            />
-            @if (loginFormGroup.controls.password.invalid){
-                <small class="text-red-500 text-sm flex justify-center ">
-                    Password is required.
-                </small>
-            }
+          <input
+            formControlName="password"
+            type="password"
+            placeholder="Password"
+            required
+            class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
+          />
+          @if (loginFormGroup.controls.password.invalid) {
+            <small class="text-red-500 text-sm flex justify-center"> Password is required. </small>
+          }
 
-            <button
-                type="submit"
-                *ngIf="loginFormGroup.valid"
-                class="bg-[#FFC2F2] hover:bg-[#FA84E4] text-white font-bold py-3 px-5 rounded-[20px] cursor-pointer mt-6 justify-center items-center w-full"
-            >
-                Login
-            </button>
+          <button
+            type="submit"
+            [disabled]="loginFormGroup.invalid"
+            class="bg-[#FFC2F2] hover:bg-[#FA84E4] text-white font-bold py-3 px-5 rounded-[20px] cursor-pointer mt-6 justify-center items-center w-full"
+          >
+            Login
+          </button>
         </form>
+      </ng-container>
+    }
+
+    @if (mfaRequired()) {
+      <ng-container>
+        <p class="text-gray-600 mt-2">
+          Multi-Factor Authentication is required. Please enter the code sent to your device.
+        </p>
+        <form [formGroup]="ottFormGroup" (ngSubmit)="onOttSubmit()" class="mt-15 space-y-15">
+          <input
+            formControlName="pin"
+            type="text"
+            placeholder="PIN"
+            required
+            class="border border-gray-300 rounded-[20px] px-4 py-2 mb-4 w-full bg-white text-[#DB40BA]"
+          />
+          <div *ngIf="ottFormGroup.controls.pin.invalid">
+            <small class="text-red-500 text-sm ml-10 p-2"> MFA Code is required. </small>
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="ottFormGroup.invalid"
+            class="bg-[#FFC2F2] hover:bg-[#FA84E4] text-white font-bold py-3 px-5 rounded-[20px] cursor-pointer mt-6 justify-center items-center w-full"
+          >
+            Verify PIN
+          </button>
+        </form>
+      </ng-container>
+    }
+
+    <div *ngIf="errorMessage()">
+      <p class="text-red-500 text-sm mt-4">{{ errorMessage() }}</p>
     </div>
+  </div>
 </div>
