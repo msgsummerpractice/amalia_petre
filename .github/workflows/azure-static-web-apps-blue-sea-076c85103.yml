@@ -43,7 +43,7 @@ jobs:
  
           skip_app_build: true
  
-          app_location: "Azure/my-app/dist/my-app/browser"
+          app_location: "Angular/my-app/dist/my-app/browser"
           output_location: ""
           api_location: ""
  
