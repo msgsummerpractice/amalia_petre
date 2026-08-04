@@ -1,11 +1,12 @@
 {
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
   },
   "routes": [
     {
       "route": "/home",
-      "allowedRoles": ["anonymous"]
+      "allowedRoles": ["authenticated"]
     }
   ],
     "responseOverrides": {
