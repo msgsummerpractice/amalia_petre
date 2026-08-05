@@ -13,22 +13,22 @@ public class AppConfig {
     
     //@Qualifier("helloRo")
     @Bean(name="helloRo")
-    public HelloWorld helloRo(){
+    public HelloWorld helloR(){
         HelloWorld helloRo = new HelloWorld();
         helloRo.setMessage("Salut Primavara!");
         return helloRo;
     }
 
     @Bean
-    oublic HelloWorld helloFr(){
+    public HelloWorld helloF(){
         HelloWorld helloFr = new HelloWorld();
         helloFr.setMessage("Bonjour le printemps!");
         return helloFr;
     }
 
     @Bean
-    //@Qualifier("helloEn")
-    public HelloWorld helloEn(){
+    @Qualifier("helloEn")
+    public HelloWorld helloE(){
         HelloWorld helloEn = new HelloWorld();
         helloEn.setMessage("Hello Spring!");
         return helloEn;

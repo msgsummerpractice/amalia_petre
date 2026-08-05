@@ -1,7 +1,8 @@
 package com.example.spring_data_jpa.configuration;
 
 import java.util.Date;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -28,14 +29,23 @@ public class JwtTokenProvider {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
 
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(Collectors.toList());
+
         String token = Jwts.builder()
                 .subject(username)
+                .claim("roles",roles)
                 .issuedAt(new Date())
                 .expiration(expireDate)
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
 
         return token;
+    }
+
+    public long getExpiresInSeconds() {
+        return jwtExpirationDate / 1000; 
     }
 
     private Key key(){

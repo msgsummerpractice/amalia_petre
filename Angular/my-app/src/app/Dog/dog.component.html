@@ -1,5 +1,5 @@
 <!-- when authStatus is "false", the page is not visible -->
-<div *authStatus="true" class="text-center p-8">
+<div *authStatus="'ROLE_ADMIN'" class="text-center p-8">
   <h1>Random Dog Image</h1>
   <button
     (click)="fetchRandomDog()"

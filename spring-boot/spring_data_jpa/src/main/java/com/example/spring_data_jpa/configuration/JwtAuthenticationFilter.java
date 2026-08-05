@@ -23,10 +23,10 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter implements Filter {
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    
+    private final JwtTokenProvider jwtTokenProvider;
 
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     //Constructor
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
@@ -41,33 +41,24 @@ public class JwtAuthenticationFilter implements Filter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
+        String jwt = getTokenFromRequest(request);
 
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if (StringUtils.hasText(jwt)) {
+            try{
+                if(jwtTokenProvider.validateToken(jwt)){
+                    String username = jwtTokenProvider.getUsername(jwt);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        String jwt = authorizationHeader.substring(7);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        try{
-            if(jwtTokenProvider.validateToken(jwt)){
-                String username = jwtTokenProvider.getUsername(jwt);
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception ex) {
+                SecurityContextHolder.clearContext();
             }
-        } catch (Exception e){
-            e.printStackTrace();
         }
-    
         filterChain.doFilter(request, response);
     }
 

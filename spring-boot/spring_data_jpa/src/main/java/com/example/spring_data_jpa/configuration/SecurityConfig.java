@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.time.Duration;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,19 +25,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.ott.OneTimeTokenGenerationSuccessHandler;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration; 
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.core.authority.FactorGrantedAuthority;
 
-@EnableMultiFactorAuthentication(authorities = {
-        FactorGrantedAuthority.PASSWORD_AUTHORITY, FactorGrantedAuthority.OTT_AUTHORITY
-})
+
+
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private final AdminMfaAuthorizationManager admin;
     private final JwtAuthenticationFilter authenticationFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -48,32 +51,24 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**", "/login", "/ott/generate").permitAll()
-                        .requestMatchers("/api/users/admin/**").access(admin)
-                        .requestMatchers("/api/users/user/**").hasRole("USER")
-                        .anyRequest().authenticated()
-                )
-                .oneTimeTokenLogin(ott -> ott
-                        .tokenGenerationSuccessHandler(oneTimeTokenGenerationSuccessHandler())
+                .cors(cors->cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex->ex.authenticationEntryPoint(authenticationEntryPoint))
+                .authorizeHttpRequests(authorize->authorize
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .anyRequest().authenticated()
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
-    // @Bean
-    // public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-    //     return configuration.getAuthenticationManager();
-    // }
-
     @Bean
     AuthenticationManager authenticationManager(DaoAuthenticationProvider daoAuthenticationProvider) {
-        final List<AuthenticationProvider> providers = List.of(daoAuthenticationProvider);
-        return new ProviderManager(providers);
+        return new ProviderManager(List.of(daoAuthenticationProvider));
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+    public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
         final var authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
@@ -86,15 +81,19 @@ public class SecurityConfig {
         return service;
     }
 
-    @Bean
-    public OneTimeTokenGenerationSuccessHandler oneTimeTokenGenerationSuccessHandler() {
-        return (request, response, oneTimeToken) -> {
-            System.out.println("==========================================");
-            System.out.println("GENERATED OTT PIN: " + oneTimeToken.getTokenValue());
-            System.out.println("==========================================");
 
-            response.setContentType("application/json");
-            response.getWriter().write("{\"message\": \"Token generated successfully! Check logs for PIN.\"}");
-        };
+    // added congiguration for the angular frontend project to be able to access the backend api
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
+
 }

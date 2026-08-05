@@ -14,9 +14,14 @@ public class Hellos {
     @Qualifier("helloEn")
     private HelloWorld helloEn;
 
+    @Autowired
+    @Qualifier("helloF")
+    private HelloWorld helloFr;
+
     public void getHellos(){
         helloRo.getMessage();
         helloEn.getMessage();
+        helloFr.getMessage();
     }
     
 }

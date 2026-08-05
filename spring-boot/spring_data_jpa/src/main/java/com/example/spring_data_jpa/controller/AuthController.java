@@ -3,6 +3,7 @@ package com.example.spring_data_jpa.controller;
 import com.example.spring_data_jpa.model.SignInResponse;
 import com.example.spring_data_jpa.model.SignInRequest;
 import com.example.spring_data_jpa.model.SignUpRequest;
+import com.example.spring_data_jpa.model.OttVerifyRequest;
 import com.example.spring_data_jpa.service.AuthService;
 
 import lombok.AllArgsConstructor;
@@ -24,17 +25,14 @@ public class AuthController {
     // Build Login REST API
     @PostMapping("/login")
     public ResponseEntity<SignInResponse> login(@RequestBody SignInRequest loginDto){
-
-        //01 - Receive the token from AuthService
-        String token = authService.login(loginDto);
-
-        //02 - Set the token as a response using JwtAuthResponse Dto class
-        SignInResponse authResponseDto = new SignInResponse();
-        authResponseDto.setAccessToken(token);
-
-        //03 - Return the response to the user
-        return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
+        return ResponseEntity.ok(authService.login(loginDto));
     }
+
+    @PostMapping("/verify-ott")
+    public ResponseEntity<SignInResponse> verifyOtt(@RequestBody OttVerifyRequest verifyDto) {
+        return ResponseEntity.ok(authService.verifyOtt(verifyDto));
+    }
+    
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody SignUpRequest registerDto){

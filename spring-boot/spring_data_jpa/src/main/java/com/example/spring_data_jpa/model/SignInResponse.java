@@ -10,7 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignInResponse {
+    private boolean mfaRequired;
     private String accessToken;
     private String tokenType = "Bearer";
     private long expiresInSeconds;
+    private List<String> roles;
 }
