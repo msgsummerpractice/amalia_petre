@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Login</title>
+    <style>
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background: #833AB4;
+            color: #060670;
+            background: linear-gradient(90deg, rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 61%, rgba(252, 176, 69, 1) 100%);
+        }
+
+        .login {
+            background: rgba(255, 255, 255, 0.15);
+            /* transparent */
+            backdrop-filter: blur(12px);
+            /* blur sticlă */
+            -webkit-backdrop-filter: blur(12px);
+            width: 200px;
+            align-items: center;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, .7);
+            text-align: center;
+            color: #060670;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+
+        }
+
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #FBF4EA;
+            color: #060670;
+            font-family: 'Courier New', Courier, monospace;
+            border-color: rgba(255, 255, 255, 0);
+
+        }
+
+        ::placeholder {
+            color: #060670 0.3;
+            font-family: 'Courier New', Courier, monospace
+        }
+
+        .sub {
+            background-color: rgba(255, 255, 255, 0.15);
+            /* transparent */
+            background-size: 0% 100%;
+            backdrop-filter: blur(12px);
+            /* blur sticlă */
+            -webkit-backdrop-filter: blur(12px);
+            color: #FBF4EA;
+            transition: background-color .5s;
+        }
+
+        .sub:hover {
+            background-color: rgba(255, 255, 255, 0);
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, .7) 100%);
+            background-repeat: no-repeat;
+            background-size: 200% 100%;
+            transition: background-size 1s, background-color 1s;
+
+        }
+
+        .sub:active {
+            background-color: rgba(255, 255, 255, 0);
+            transition: background-size 0
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login">
+
+        <div th:if="${param.error}" class="error">
+            Invalid username or password.
+        </div>
+
+        <!-- <div th:if="${param.logout}" class="logout">
+        You have been logged out successfully.
+    </div> -->
+
+        <form th:action="@{perform_login}" method="post">
+
+            <h1 name="login">Log in</h1>
+            <label for="username">Username</label>
+            <input type="text" name="username" class="data" id="username" placeholder="Username" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="data" placeholder="Password" required>
+            <input type="submit" value="Sign in" class="sub">
+
+        </form>
+
+        <!-- <p>Don't have an account? <a th:href="@{/register}" class="sub">Sign up</a></p> -->
+    </div>
+</body>
+
+</html>
