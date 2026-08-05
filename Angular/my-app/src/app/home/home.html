@@ -1,0 +1,46 @@
+<div
+  class="w-full h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+>
+  <header>
+    <mat-toolbar color="primary-container" id="toolbar">
+      <a mat-button routerLink="/home">Home</a>
+
+      <a mat-button routerLink="/login">Login</a>
+      <a mat-button routerLink="/about">About</a>
+    </mat-toolbar>
+
+    <div class="flex justify-end p-4">
+      <mat-icon
+        aria-hidden="false"
+        aria-label="Example home icon"
+        fontIcon="account_circle"
+      ></mat-icon>
+    </div>
+  </header>
+
+  <main>
+    <div class="text-center mb-10 p-12">
+      <h1 class="text-4xl font-bold mb-4">{{ 'dog gallery' | format }}</h1>
+      <p class="text-lg text-gray-700">Different types of dogs</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
+      <div class="bg-[#FFC2DC] rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-2">{{ 'french bulldog' | format }}</h2>
+        <p class="text-gray-600">Small dog breed</p>
+      </div>
+
+      <div class="bg-[#EED6FF] rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-2">{{ 'german shepherd' | format }}</h2>
+        <p class="text-gray-600">Large dog breed</p>
+      </div>
+
+      <div class="bg-[#D6F1FF] rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-2">{{ 'golden retriever' | format }}</h2>
+        <p class="text-gray-600">Medium to large dog breed</p>
+      </div>
+    </div>
+    <app-dog></app-dog>
+  </main>
+</div>
+
