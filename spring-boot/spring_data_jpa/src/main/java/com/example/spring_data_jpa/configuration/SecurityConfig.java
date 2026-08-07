@@ -56,10 +56,8 @@ public class SecurityConfig {
                 .exceptionHandling(ex->ex.authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(authorize->authorize
                     .requestMatchers("/api/auth/**").permitAll()
-                    .anyRequest().authenticated()
-                )
-                .authorizeHttpRequests(authorize->authorize
                     .requestMatchers("/users/hello-world").permitAll()
+                    .anyRequest().authenticated()
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
