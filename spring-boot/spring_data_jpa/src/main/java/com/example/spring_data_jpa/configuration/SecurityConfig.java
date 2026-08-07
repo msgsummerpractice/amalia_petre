@@ -58,6 +58,9 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/**").permitAll()
                     .anyRequest().authenticated()
                 )
+                .authorizeHttpRequests(authorize->authorize
+                    .requestMatchers("/users/hello-world").permitAll()
+                )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
