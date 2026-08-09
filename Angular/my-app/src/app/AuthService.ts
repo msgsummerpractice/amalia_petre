@@ -15,7 +15,7 @@ export interface SignInResponse {
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = 'https://amalia-container-backend2.grayglacier-3f9430f4.italynorth.azurecontainerapps.io/api/auth';
 
   private _token=signal<string | null>(null);
   private _roles=signal<string[]>([]);

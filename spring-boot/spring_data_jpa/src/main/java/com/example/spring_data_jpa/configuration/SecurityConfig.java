@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex->ex.authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(authorize->authorize
                     .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/users/hello-world").permitAll()
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -86,7 +87,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200","https://blue-sea-076c85103.7.azurestaticapps.net"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
         configuration.setAllowCredentials(true);

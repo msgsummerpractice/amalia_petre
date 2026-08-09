@@ -37,6 +37,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/hello-world")
+    public String getHello() {
+        return "Hello, World!";
+    }
+    
+
    // ----------------------------------- HTTP METHODS USING DTOs -----------------------------------------------------
     @GetMapping(produces = {
             MediaType.APPLICATION_JSON_VALUE,
